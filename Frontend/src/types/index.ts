@@ -1,0 +1,17 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface Event {
+  id: string;
+  name: string;
+  description: string;
+  date: string;
+  imageUrl: string;
+  creatorId: string;
+  attendeeCount: number;
+  category: string;
+  attendees: string[];
+}
