@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Filter, Calendar } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import { Event } from '../types';
+import { useEventStore } from '../store/eventStore';
+import { useAuthStore } from '../store/authStore';
+import { onEventUpdate } from '../services/socket';
 
 const mockEvents: Event[] = [
   {
@@ -29,9 +34,20 @@ const mockEvents: Event[] = [
 ];
 
 const Dashboard = () => {
-  const [events, setEvents] = useState<Event[]>(mockEvents);
+  const { events, setEvents, joinEvent, leaveEvent, updateEventAttendees } = useEventStore();
+  const user = useAuthStore((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  useEffect(() => {
+    // Initialize events
+    setEvents(mockEvents);
+
+    // Listen for real-time updates
+    onEventUpdate(({ eventId, attendeeCount }) => {
+      updateEventAttendees(eventId, attendeeCount);
+    });
+  }, []);
 
   const categories = ['All', 'Technology', 'Music', 'Sports', 'Art', 'Business'];
 
@@ -40,6 +56,24 @@ const Dashboard = () => {
     const matchesCategory = selectedCategory === '' || selectedCategory === 'All' || event.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleJoinEvent = async (eventId: string) => {
+    try {
+      await joinEvent(eventId);
+      toast.success('Successfully joined the event!');
+    } catch (error) {
+      toast.error('Failed to join the event. Please try again.');
+    }
+  };
+
+  const handleLeaveEvent = async (eventId: string) => {
+    try {
+      await leaveEvent(eventId);
+      toast.success('Successfully left the event.');
+    } catch (error) {
+      toast.error('Failed to leave the event. Please try again.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -73,34 +107,56 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map(event => (
-            <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <img
-                src={event.imageUrl}
-                alt={event.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{event.name}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-                <div className="flex items-center text-gray-500 mb-4">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  {new Date(event.date).toLocaleDateString()}
+          {filteredEvents.map(event => {
+            const isAttending = event.attendees.includes(user?.id || '');
+            const isCreator = event.creatorId === user?.id;
+
+            return (
+              <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={event.imageUrl}
+                  alt={event.name}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{event.name}</h3>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+                  <div className="flex items-center text-gray-500 mb-4">
+                    <Calendar className="h-5 w-5 mr-2" />
+                    {new Date(event.date).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                      {event.category}
+                    </span>
+                    <span className="text-gray-600 text-sm">
+                      {event.attendeeCount} attendees
+                    </span>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center">
+                    <Link
+                      to={`/events/${event.id}`}
+                      className="text-indigo-600 hover:text-indigo-700 font-medium"
+                    >
+                      View Details
+                    </Link>
+                    {!isCreator && (
+                      <button
+                        onClick={() => isAttending ? handleLeaveEvent(event.id) : handleJoinEvent(event.id)}
+                        className={`px-4 py-2 rounded-md text-sm font-medium ${
+                          isAttending
+                            ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        }`}
+                      >
+                        {isAttending ? 'Leave Event' : 'Join Event'}
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                    {event.category}
-                  </span>
-                  <span className="text-gray-600 text-sm">
-                    {event.attendeeCount} attendees
-                  </span>
-                </div>
-                <button className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Join Event
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>

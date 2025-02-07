@@ -13,5 +13,5 @@ export interface Event {
   creatorId: string;
   attendeeCount: number;
   category: string;
-  attendees: string[];
+  attendees: (string | User)[]; // 🔥 Now supports both user IDs and user objects
 }

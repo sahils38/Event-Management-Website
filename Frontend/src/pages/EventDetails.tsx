@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import { Event } from '../types';
 import { useAuthStore } from '../store/authStore';
+import { useEventStore } from '../store/eventStore';
+import { onEventUpdate } from '../services/socket';
 
 const mockEvent: Event = {
   id: '1',
@@ -23,6 +25,7 @@ const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
+  const { joinEvent, leaveEvent, updateEventAttendees } = useEventStore();
   const [event, setEvent] = useState<Event | null>(null);
   const [isAttending, setIsAttending] = useState(false);
 
@@ -30,7 +33,14 @@ const EventDetails = () => {
     // TODO: Fetch event data from API
     setEvent(mockEvent);
     // Check if user is attending
-    setIsAttending(mockEvent.attendees.some((att) => att.id === user?.id));
+    setIsAttending(mockEvent.attendees.includes(user?.id || ''));
+
+    // Listen for real-time updates
+    onEventUpdate(({ eventId, attendeeCount }) => {
+      if (eventId === id) {
+        updateEventAttendees(eventId, attendeeCount);
+      }
+    });
   }, [id, user?.id]);
 
   if (!event) {
@@ -39,7 +49,7 @@ const EventDetails = () => {
 
   const handleJoinEvent = async () => {
     try {
-      // TODO: Implement actual API call
+      await joinEvent(event.id);
       setIsAttending(true);
       toast.success('Successfully joined the event!');
     } catch (error) {
@@ -49,7 +59,7 @@ const EventDetails = () => {
 
   const handleLeaveEvent = async () => {
     try {
-      // TODO: Implement actual API call
+      await leaveEvent(event.id);
       setIsAttending(false);
       toast.success('Successfully left the event.');
     } catch (error) {
