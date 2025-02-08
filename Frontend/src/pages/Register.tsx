@@ -20,7 +20,14 @@ const Register = () => {
     }
 
     try {
-      // TODO: Implement actual API call
+      // Mock response with role
+      const newUser = { 
+        id: 'new-user-id', 
+        name, 
+        email, 
+        role: 'user'  // Default role as 'user'
+      };
+
       toast.success('Registration successful! Please login.');
       navigate('/login');
     } catch (error) {

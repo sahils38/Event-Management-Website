@@ -14,9 +14,14 @@ const Login = () => {
     e.preventDefault();
     
     try {
-      // TODO: Implement actual API call
+      // Ensure role is correctly typed
       const mockResponse = {
-        user: { id: '1', name: 'John Doe', email },
+        user: { 
+          id: '1', 
+          name: 'John Doe', 
+          email,
+          role: "owner" as "owner" // Explicitly set type
+        },
         token: 'mock-token'
       };
       
@@ -30,7 +35,13 @@ const Login = () => {
   };
 
   const handleGuestLogin = () => {
-    const guestUser = { id: 'guest', name: 'Guest User', email: 'guest@example.com' };
+    const guestUser = { 
+      id: 'guest', 
+      name: 'Guest User', 
+      email: 'guest@example.com', 
+      role: "user" as "user" // Explicitly set type
+    };
+
     setUser(guestUser);
     setToken('guest-token');
     navigate('/');
