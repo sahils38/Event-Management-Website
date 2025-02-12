@@ -1,0 +1,32 @@
+# Ignore node_modules (dependencies)
+node_modules/
+
+# Ignore logs and other temporary files
+*.log
+*.env
+*.bak
+
+# Ignore npm-debug logs
+npm-debug.log*
+
+# Ignore OS-specific files (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Ignore IDE or editor-specific files (e.g., VSCode, JetBrains)
+.vscode/
+.idea/
+
+# Ignore other generated or temporary files
+*.swp
+*.swo
+*.pid
+*.gz
+*.tar
+*.zip
+
+# Ignore test coverage reports
+coverage/
+
+# Ignore package-lock.json if you don't want to track it (optional)
+# package-lock.json
