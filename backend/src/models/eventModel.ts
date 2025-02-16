@@ -1,25 +1,25 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IEvent extends Document {
-  name: string;
+  eventName: string;
   description: string;
-  date: string;
-  imageUrl: string;
-  creatorId: string;
+  date: Date;
+  image: string;
+  organiser: mongoose.Types.ObjectId;
   attendeeCount: number;
   category: string;
-  attendees: string[];
+  attendees: mongoose.Types.ObjectId[];
 }
 
-const eventSchema = new mongoose.Schema<IEvent>({
-  name: { type: String, required: true },
+const eventSchema = new Schema<IEvent>({
+  eventName: { type: String, required: true },
   description: { type: String, required: true },
-  date: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-  creatorId: { type: String, required: true },
+  date: { type: Date, required: true }, // Changed to Date for better handling
+  image: { type: String, required: true },
+  organiser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Changed from creatorId
   attendeeCount: { type: Number, default: 0 },
   category: { type: String, required: true },
-  attendees: { type: [String], default: [] },
-});
+  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }] // Store User references
+}, { timestamps: true });
 
 export default mongoose.model<IEvent>('Event', eventSchema);

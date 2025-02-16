@@ -31,12 +31,24 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return; // Ensure we stop execution here
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
+  
+const token = jwt.sign(
+  { id: user._id }, 
+  process.env.JWT_SECRET as string || "default_secret", 
+  { expiresIn: '1d' }
+);
 
-    res.cookie('token', token, { httpOnly: true }).json({
-      message: 'Login successful',
-      user: { id: user._id, name: user.name, email: user.email },
-    });
+console.log("Generated Token:", token);  // Check if token is generated
+
+res.cookie('token', token, { httpOnly: true });
+console.log("Token set in cookie");  // Check if cookie is set
+
+res.status(200).json({
+  message: 'Login successful',
+  user: { id: user._id, name: user.name, email: user.email },
+  token
+});
+console.log("Response sent to client"); 
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Error logging in' });

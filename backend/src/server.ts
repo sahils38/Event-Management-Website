@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes';
+import eventRoutes from './routes/eventRoutes';  // ✅ Import event routes
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);  // ✅ Register event routes
 
 const PORT = process.env.PORT || 5000;
 mongoose
