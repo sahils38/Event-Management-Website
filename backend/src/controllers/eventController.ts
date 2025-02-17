@@ -53,7 +53,7 @@ export const editEvent = async (req: AuthRequest, res: Response): Promise<void> 
     const { eventName, description, date, image, category } = req.body;
     event.eventName = eventName || event.eventName;
     event.description = description || event.description;
-    event.date = date || event.date;
+    event.date = date ? new Date(date) : event.date; 
     event.image = image || event.image;
     event.category = category || event.category;
 
