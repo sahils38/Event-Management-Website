@@ -8,10 +8,20 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login'); // Redirect to login page after logout
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:5000/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Ensures cookies are included in the request
+      });
+  
+      logout(); // Clear user state in frontend
+      navigate('/login'); // Redirect to login page
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
+  
 
   return (
     <nav className="bg-white shadow-sm">

@@ -3,6 +3,16 @@ import User, { IUser } from '../models/userModel';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+
+export const logoutUser = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie('token', { httpOnly: true, secure: false }); // Clears the token cookie
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error logging out' });
+  }
+};
+
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
   try {

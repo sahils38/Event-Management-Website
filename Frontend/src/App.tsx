@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard';
 import EventDetails from './pages/EventDetails';
 import CreateEvent from './pages/CreateEvent';
 import EditEvent from './pages/EditEvent';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './routes/protectedRoute';
 import { useAuthStore } from './store/authStore';
 
 function App() {
@@ -16,9 +16,11 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Routes>
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-          
+          {/* Redirect logged-in users away from auth pages */}
+          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
+
+          {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/events/create" element={<CreateEvent />} />
@@ -26,6 +28,7 @@ function App() {
             <Route path="/events/:id/edit" element={<EditEvent />} />
           </Route>
         </Routes>
+
         <Toaster position="top-right" />
       </div>
     </Router>

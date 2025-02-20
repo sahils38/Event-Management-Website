@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,28 +10,40 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+  
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
-
+  
     try {
-      // Mock response with role
-      const newUser = { 
-        id: 'new-user-id', 
-        name, 
-        email, 
-        role: 'user'  // Default role as 'user'
-      };
-
+      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+  
       toast.success('Registration successful! Please login.');
       navigate('/login');
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Registration failed. Please try again.');
     }
   };
 

@@ -2,58 +2,70 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Image as ImageIcon, Clock, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { useAuthStore } from '../store/authStore';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
+  const { token } = useAuthStore(); // Get the auth token
   const [formData, setFormData] = useState({
-    name: '',
+    eventName: '',
     description: '',
     date: '',
     time: '',
-    imageUrl: '',
-    category: ''
+    image: '',
+    category: '',
   });
 
   const categories = ['Technology', 'Music', 'Sports', 'Art', 'Business'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      // TODO: Implement actual API call
+      await axios.post(
+        'http://localhost:5000/api/events',
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Send auth token
+          withCredentials: true,
+        }
+      );
+
       toast.success('Event created successfully!');
-      navigate('/');
+navigate('/', { state: { refresh: true } });
     } catch (error) {
       toast.error('Failed to create event. Please try again.');
+      console.error(error);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Event</h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="eventName" className="block text-sm font-medium text-gray-700">
                 Event Name
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
+                id="eventName"
+                name="eventName"
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={formData.name}
+                value={formData.eventName}
                 onChange={handleChange}
               />
             </div>
@@ -112,18 +124,18 @@ const CreateEvent = () => {
             </div>
 
             <div>
-              <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                 Image URL
               </label>
               <div className="mt-1 relative">
                 <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="url"
-                  id="imageUrl"
-                  name="imageUrl"
+                  id="image"
+                  name="image"
                   required
                   className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  value={formData.imageUrl}
+                  value={formData.image}
                   onChange={handleChange}
                   placeholder="https://example.com/image.jpg"
                 />
@@ -145,8 +157,10 @@ const CreateEvent = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select a category</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
