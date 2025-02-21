@@ -13,7 +13,7 @@ interface Event {
   description: string;
   date: string;
   category: string;
-  creator: string;
+  organiser: string; // ✅ Fixed: Removed incorrect 'creator'
   attendees: string[];
   image: string;
 }
@@ -22,13 +22,13 @@ const Dashboard = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
-  const [events, setEvents] = useState<Event[]>([]); // Use Event[] type
+  const [events, setEvents] = useState<Event[]>([]);
 
   // Fetch events from backend
   const fetchEvents = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/events');
-      console.log(response.data); // Debugging: Log API response
+      console.log('Events:', response.data); // ✅ Debugging: Log API response
       setEvents(response.data);
     } catch (error) {
       toast.error('Failed to load events.');
@@ -65,7 +65,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {events.length > 0 ? (
           events.map(event => {
-            const isCreator = event.creator === user?.id;
+            const isCreator = event.organiser === user?.id; // ✅ Fixed: Check `organiser`, not `creator`
 
             return (
               <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden">

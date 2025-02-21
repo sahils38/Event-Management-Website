@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard';
 import EventDetails from './pages/EventDetails';
 import CreateEvent from './pages/CreateEvent';
 import EditEvent from './pages/EditEvent';
-import ProtectedRoute from './routes/protectedRoute';
+import ProtectedRoute from './routes/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
 
 function App() {

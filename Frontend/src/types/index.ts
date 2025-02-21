@@ -6,12 +6,12 @@ export interface User {
 }
 
 export interface Event {
-  id: string;
-  name: string;
+  _id: string;
+  eventName: string;
   description: string;
   date: string;
   imageUrl: string;
-  creatorId: string;
+  organiser: string;
   attendeeCount: number;
   category: string;
   attendees: (string | User)[]; // 🔥 Now supports both user IDs and user objects

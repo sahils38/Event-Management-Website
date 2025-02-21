@@ -4,57 +4,81 @@ import { Calendar, Image as ImageIcon, Clock, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 import { Event } from '../types';
-
-const mockEvent: Event = {
-  id: '1',
-  name: 'Tech Conference 2025',
-  description: 'Join us for the biggest tech conference of the year',
-  date: '2025-03-15T09:00:00',
-  imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80',
-  creatorId: '1',
-  attendeeCount: 120,
-  category: 'Technology',
-  attendees: []
-};
+import axios from 'axios';
 
 const EditEvent = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); // Ensure we're using the correct parameter name
   const [formData, setFormData] = useState({
-    name: '',
+    eventName: '',
     description: '',
     date: '',
     time: '',
-    imageUrl: '',
-    category: ''
+    image: '',
+    category: '',
   });
 
   const categories = ['Technology', 'Music', 'Sports', 'Art', 'Business'];
 
   useEffect(() => {
-    // TODO: Fetch event data from API
-    const event = mockEvent;
-    const dateObj = new Date(event.date);
-    
-    setFormData({
-      name: event.name,
-      description: event.description,
-      date: dateObj.toISOString().split('T')[0],
-      time: dateObj.toTimeString().slice(0, 5),
-      imageUrl: event.imageUrl,
-      category: event.category
-    });
-  }, [id]);
+    const fetchEvent = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error('Unauthorized access. Please log in.');
+          navigate('/login');
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:5000/api/events/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const event: Event = response.data;
+
+        const dateObj = new Date(event.date);
+        setFormData({
+          eventName: event.eventName,
+          description: event.description,
+          date: dateObj.toISOString().split('T')[0],
+          time: dateObj.toTimeString().slice(0, 5),
+          image: event.image, // Changed from event.imageUrl to event.image
+          category: event.category,
+        });
+      } catch (error) {
+        toast.error('Failed to fetch event details');
+      }
+    };
+
+    fetchEvent();
+  }, [id, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      // TODO: Implement actual API call
-      toast.success('Event updated successfully!');
-      navigate('/');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('You are not logged in!');
+        return;
+      }
+
+      const response = await axios.put(
+        `http://localhost:5000/api/events/${id}`, // Fixed eventId to id
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success('Event updated successfully!');
+        navigate('/dashboard');
+      }
     } catch (error) {
-      toast.error('Failed to update event. Please try again.');
+      toast.error('Failed to update event. Make sure you are the organiser.');
     }
   };
 
@@ -66,31 +90,24 @@ const EditEvent = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Edit Event</h2>
-          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Event Name
-              </label>
+              <label htmlFor="eventName" className="block text-sm font-medium text-gray-700">Event Name</label>
               <input
                 type="text"
-                id="name"
-                name="name"
+                id="eventName"
+                name="eventName"
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                value={formData.name}
+                value={formData.eventName}
                 onChange={handleChange}
               />
             </div>
-
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
               <textarea
                 id="description"
                 name="description"
@@ -101,99 +118,63 @@ const EditEvent = () => {
                 onChange={handleChange}
               />
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                  Date
-                </label>
-                <div className="mt-1 relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    required
-                    className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    value={formData.date}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-                  Time
-                </label>
-                <div className="mt-1 relative">
-                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="time"
-                    id="time"
-                    name="time"
-                    required
-                    className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    value={formData.time}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
-                Image URL
-              </label>
-              <div className="mt-1 relative">
-                <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700">Date</label>
                 <input
-                  type="url"
-                  id="imageUrl"
-                  name="imageUrl"
+                  type="date"
+                  id="date"
+                  name="date"
                   required
-                  className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  value={formData.imageUrl}
+                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.date}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="time" className="block text-sm font-medium text-gray-700">Time</label>
+                <input
+                  type="time"
+                  id="time"
+                  name="time"
+                  required
+                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  value={formData.time}
                   onChange={handleChange}
                 />
               </div>
             </div>
-
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                Category
-              </label>
-              <div className="mt-1 relative">
-                <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <select
-                  id="category"
-                  name="category"
-                  required
-                  className="block w-full pl-10 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  value={formData.category}
-                  onChange={handleChange}
-                >
-                  <option value="">Select a category</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700">Image URL</label>
+              <input
+                type="url"
+                id="image"
+                name="image"
+                required
+                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value={formData.image}
+                onChange={handleChange}
+              />
             </div>
-
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                id="category"
+                name="category"
+                required
+                className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                value={formData.category}
+                onChange={handleChange}
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Save Changes
-              </button>
+              <button type="button" onClick={() => navigate('/')} className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+              <button type="submit" className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Save Changes</button>
             </div>
           </form>
         </div>

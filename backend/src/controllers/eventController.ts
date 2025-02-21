@@ -30,7 +30,19 @@ export const createEvent = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({ success: false, message: 'Server Error', error });
   }
 };
-
+export const eventDetails = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+       res.status(404).json({ message: 'Event not found' });
+       return;
+    }
+    res.json(event);
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 // ✅ Edit Event
 export const editEvent = async (req: AuthRequest, res: Response): Promise<void> => {
   try {

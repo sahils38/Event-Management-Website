@@ -18,7 +18,7 @@ export const useEventStore = create<EventState>((set) => ({
   updateEventAttendees: (eventId: string, attendeeCount: number) =>
     set((state) => ({
       events: state.events.map((event) =>
-        event.id === eventId ? { ...event, attendeeCount } : event
+        event._id === eventId ? { ...event, attendeeCount } : event
       ),
     }) as Partial<EventState>),
 
@@ -30,7 +30,7 @@ export const useEventStore = create<EventState>((set) => ({
       // Optimistically update the UI
       set((state) => ({
         events: state.events.map((event) =>
-          event.id === eventId
+          event._id === eventId
             ? {
                 ...event,
                 attendeeCount: event.attendeeCount + 1,
@@ -53,7 +53,7 @@ export const useEventStore = create<EventState>((set) => ({
       // Optimistically update the UI
       set((state) => ({
         events: state.events.map((event) =>
-          event.id === eventId
+          event._id === eventId
             ? {
                 ...event,
                 attendeeCount: Math.max(0, event.attendeeCount - 1), // Prevent negative count
