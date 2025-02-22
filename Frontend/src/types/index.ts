@@ -9,8 +9,8 @@ export interface Event {
   _id: string;
   eventName: string;
   description: string;
-  date: string;
-  imageUrl: string;
+  date: Date;
+  image: string;
   organiser: string;
   attendeeCount: number;
   category: string;

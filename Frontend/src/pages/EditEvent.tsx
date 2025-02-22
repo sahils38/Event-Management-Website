@@ -54,17 +54,24 @@ const EditEvent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         toast.error('You are not logged in!');
         return;
       }
-
+  
+      // Ensure date and time are formatted correctly
+      const formattedData = {
+        ...formData,
+        date: formData.date, // Keep the date as YYYY-MM-DD
+        time: formData.time, // Keep time as HH:MM
+      };
+  
       const response = await axios.put(
-        `http://localhost:5000/api/events/${id}`, // Fixed eventId to id
-        formData,
+        `http://localhost:5000/api/events/${id}`,
+        formattedData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,15 +79,16 @@ const EditEvent = () => {
           },
         }
       );
-
+  
       if (response.status === 200) {
         toast.success('Event updated successfully!');
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error) {
       toast.error('Failed to update event. Make sure you are the organiser.');
     }
   };
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

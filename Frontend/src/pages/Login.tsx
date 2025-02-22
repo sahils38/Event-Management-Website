@@ -26,6 +26,7 @@ const Login = () => {
       
       setUser(response.data.user);
       setToken(response.data.token);
+      localStorage.setItem('token', response.data.token);
       toast.success('Login successful!');
       navigate('/');
     } catch (error) {
