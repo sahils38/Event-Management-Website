@@ -48,16 +48,29 @@ const Dashboard = () => {
   }, [location.state, navigate]);
 
   const handleDelete = async (eventId: string) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        await axios.delete(`http://localhost:5000/api/events/${eventId}`);
-        toast.success('Event deleted successfully!');
-        setEvents(events.filter(event => event._id !== eventId));
-      } catch (error) {
-        toast.error('Failed to delete the event. Please try again.');
+    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    if (!confirmDelete) return;
+  
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('You are not logged in!');
+        return;
       }
+  
+      await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      toast.success('Event deleted successfully!');
+      setEvents((prevEvents) => prevEvents.filter(event => event._id !== eventId));
+    } catch (error) {
+      toast.error('Failed to delete event. Make sure you are the organiser.');
     }
   };
+  
 
   return (
     <>
