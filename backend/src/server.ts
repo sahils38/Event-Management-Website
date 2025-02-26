@@ -11,7 +11,16 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'https://event-management-website-three.vercel.app', credentials: true }));
+const allowedOrigins = [
+  'http://localhost:5173', // For local development
+  'https://event-management-website-three.vercel.app', // Old frontend (if still needed)
+  'https://event-management-website-713pxmn4c.vercel.app' // ✅ New frontend
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 
