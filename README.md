@@ -85,7 +85,7 @@ Your Name
 
 **GitHub**: sahils38
 
-**LinkedIn**: ![Sahil Saraswat](https://www.linkedin.com/in/sahil-saraswat-67a365251/)
+**LinkedIn**: [Sahil Saraswat](https://www.linkedin.com/in/sahil-saraswat-67a365251/)
 
 
 
