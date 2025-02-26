@@ -62,24 +62,49 @@ const EventDetails = () => {
     }
   
     try {
+      const token = localStorage.getItem('token'); // Retrieve token from local storage
+      if (!token) {
+        toast.error('Unauthorized: Please log in.');
+        return;
+      }
+  
       const response = await axios.post(
-        `https://event-management-website-qaje.onrender.com/api/events/${event._id}/join`, 
-        {}, 
-        { withCredentials: true } // Ensure cookies are sent for authentication
+        `https://event-management-website-qaje.onrender.com/api/events/${event._id}/join`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true, // Ensure cookies are sent for authentication
+        }
       );
   
       // Update state to reflect the joined event
       setIsAttending(true);
       setEvent((prev) => prev ? { ...prev, attendeeCount: response.data.event.attendeeCount } : null);
-      
+  
       toast.success('Successfully joined the event!');
     } catch (error: any) {
-      if (error.response?.status === 400) {
-        toast.error('You have already joined this event.');
-      } else if (error.response?.status === 401) {
-        toast.error('Unauthorized: Please log in.');
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            toast.error('You have already joined this event.');
+            break;
+          case 401:
+            toast.error('Unauthorized: Please log in.');
+            break;
+          case 403:
+            toast.error('Forbidden: You are not allowed to join this event.');
+            break;
+          case 500:
+            toast.error('Server error. Please try again later.');
+            break;
+          default:
+            toast.error('Failed to join the event. Please try again.');
+        }
       } else {
-        toast.error('Failed to join the event. Please try again.');
+        toast.error('Network error. Please check your connection.');
       }
     }
   };
