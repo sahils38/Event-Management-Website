@@ -27,7 +27,7 @@ const Dashboard = () => {
   // Fetch events from backend
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/events');
+      const response = await axios.get('https://event-management-website-qaje.onrender.com/api/events');
       console.log('Events:', response.data); // ✅ Debugging: Log API response
       setEvents(response.data);
     } catch (error) {
@@ -58,7 +58,7 @@ const Dashboard = () => {
         return;
       }
   
-      await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+      await axios.delete(`https://event-management-website-qaje.onrender.com/api/events/${eventId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

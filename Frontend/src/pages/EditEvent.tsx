@@ -30,7 +30,7 @@ const EditEvent = () => {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/api/events/${id}`, {
+        const response = await axios.get(`https://event-management-website-qaje.onrender.com/api/events/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const event: Event = response.data;
@@ -70,7 +70,7 @@ const EditEvent = () => {
       };
   
       const response = await axios.put(
-        `http://localhost:5000/api/events/${id}`,
+        `https://event-management-website-qaje.onrender.com/api/events/${id}`,
         formattedData,
         {
           headers: {

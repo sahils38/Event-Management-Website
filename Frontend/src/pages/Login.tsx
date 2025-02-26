@@ -22,7 +22,7 @@ const Login = () => {
     e.preventDefault();
     
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password }, { withCredentials: true });
+      const response = await axios.post('https://event-management-website-qaje.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
       
       setUser(response.data.user);
       setToken(response.data.token);

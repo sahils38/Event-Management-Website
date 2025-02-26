@@ -21,7 +21,7 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/events/${id}`, { withCredentials: true });
+        const response = await axios.get(`https://event-management-website-qaje.onrender.com/api/events/${id}`, { withCredentials: true });
         setEvent(response.data);
         setIsAttending(response.data.attendees.includes(user?.id || ''));
       } catch (error) {
@@ -63,7 +63,7 @@ const EventDetails = () => {
   
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/events/${event._id}/join`, 
+        `https://event-management-website-qaje.onrender.com/api/events/${event._id}/join`, 
         {}, 
         { withCredentials: true } // Ensure cookies are sent for authentication
       );

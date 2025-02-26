@@ -25,7 +25,7 @@ const CreateEvent = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/events',
+        'https://event-management-website-qaje.onrender.com/api/events',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` }, // Send auth token

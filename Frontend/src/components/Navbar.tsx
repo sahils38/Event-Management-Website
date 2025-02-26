@@ -10,7 +10,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5000/api/auth/logout', {
+      await fetch('https://event-management-website-qaje.onrender.com/api/auth/logout', {
         method: 'POST',
         credentials: 'include', // Ensures cookies are included in the request
       });
