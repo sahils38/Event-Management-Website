@@ -24,6 +24,15 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
+app.head('/ping', (req, res) => {
+  res.sendStatus(200);
+});
+
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);  // ✅ Register event routes

@@ -35,12 +35,13 @@ const EditEvent = () => {
         });
         const event: Event = response.data;
 
-        const dateObj = new Date(event.date);
+        const formattedDate = new Date(formData.date).toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const formattedTime = formData.time;
         setFormData({
           eventName: event.eventName,
           description: event.description,
-          date: dateObj.toISOString().split('T')[0],
-          time: dateObj.toTimeString().slice(0, 5),
+          date:formattedDate ,
+          time:formattedTime,
           image: event.image, // Changed from event.imageUrl to event.image
           category: event.category,
         });

@@ -12,11 +12,12 @@ export const createEvent = async (req: AuthRequest, res: Response): Promise<void
 
     const { eventName, description, date, time, image, category } = req.body;
     const organiser = req.user.id; // Attach logged-in user as organiser
-    const combinedDateTime = new Date(`${date}T${time}:00.000Z`);
+    const eventDate = new Date(date);
     const newEvent = new Event({
       eventName,
       description,
-      date: combinedDateTime ,
+      date: eventDate ,
+      time,
       image,
       category,
       organiser, // Ensure consistency
@@ -67,9 +68,8 @@ export const editEvent = async (req: AuthRequest, res: Response): Promise<void> 
 
     event.eventName = eventName || event.eventName;
     event.description = description || event.description;
-    if (date && time) {
-      event.date = new Date(`${date}T${time}:00.000Z`);
-    }
+    event.date = date ? new Date(date) : event.date;  // Keep date as Date object
+    event.time = time || event.time;
 
     event.image = image || event.image;
     event.category = category || event.category;

@@ -4,6 +4,7 @@ export interface IEvent extends Document {
   eventName: string;
   description: string;
   date: Date;
+  time: string,
   image: string;
   organiser: mongoose.Types.ObjectId;
   attendeeCount: number;
@@ -14,7 +15,8 @@ export interface IEvent extends Document {
 const eventSchema = new Schema<IEvent>({
   eventName: { type: String, required: true },
   description: { type: String, required: true },
-  date: { type: Date, required: true }, // Changed to Date for better handling
+  date: { type: Date, required: true },
+  time: { type: String, required: true }, // Changed to Date for better handling
   image: { type: String, required: true },
   organiser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Changed from creatorId
   attendeeCount: { type: Number, default: 0 },
