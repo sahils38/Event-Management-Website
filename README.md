@@ -1,4 +1,4 @@
-# 🎟️ Event Management Website
+#  Event Management Website
 
  
 This is a full-stack Event Management Web Application that allows users to **create, edit, delete, and join events**. The platform ensures seamless user authentication using JWT and provides a responsive frontend built with **React & TypeScript**, while the backend is powered by **Node.js, Express, and MongoDB Atlas**. 🎉
@@ -70,7 +70,40 @@ npm start
 - **DELETE** `/api/events/:id` – Delete an event ❌
 - **POST** `/api/events/:id/join` – Join an event 👥
 
+### Deployment 🚀
 
+## Backend (Render)
+
+The backend is deployed on Render.
+
+**Steps to Deploy Backend:**
+
+- Connect the repository to Render.com
+
+- **Set build command:** npm install && npm run build
+
+- **Set start command:** node dist/server.js
+
+- Add environment variables **(MongoDB URI, JWT Secret, etc.)**
+
+- Deploy & get the live API URL
+
+### Frontend (Vercel)
+
+- The frontend is deployed on Vercel at:
+👉 [Live Site](https://event-management-website-three.vercel.app/)
+
+- **Steps to Deploy Frontend:**
+
+- Push the frontend code to GitHub
+
+- Connect the repository to Vercel.com
+
+- **Set build command:** npm install && npm run build
+
+- Set environment variables (Backend API URL)
+
+- Deploy & get the live site URL
 
 ## 🤝 Contributing
 Pull requests are welcome! If you'd like to contribute, feel free to fork the repo and submit a PR. 🚀
@@ -81,7 +114,7 @@ This project is licensed under the **MIT License**.
 ---
 ## Author
 
-Your Name
+Sahil Saraswat
 
 **GitHub**: sahils38
 
